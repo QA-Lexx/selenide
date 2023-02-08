@@ -1,34 +1,35 @@
 package ru.netology.web;
 
+import com.codeborne.selenide.Condition;
+import com.codeborne.selenide.Configuration;
 import org.junit.jupiter.api.Test;
-
+import org.openqa.selenium.Keys;
 import java.time.Duration;
-
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.*;
 import static com.codeborne.selenide.Selenide.*;
 
 class RegistrationTest {
+
+    private String generateDate (int addDays, String pattern) {
+        return LocalDate.now().plusDays(addDays).format(DateTimeFormatter.ofPattern(pattern));
+    }
+
     @Test
     void shouldRegisterByAccountNumberDOMModification() {
         open("http://localhost:9999");
-        $$(".tab-item").find(exactText("По номеру счёта")).click();
-        $("[name='number']").setValue("4055 0100 0123 4613 8564");
-        $("[name='phone']").setValue("+792000000000");
-        $$("button").find(exactText("Продолжить")).click();
-        $(withText("Успешная авторизация")).shouldBe(visible, Duration.ofMillis(5000));
-        $(byText("Личный кабинет")).shouldBe(visible, Duration.ofMillis(5000));
-    }
-
-    @Test
-    void shouldRegisterByAccountNumberVisibilityChange() {
-        open("http://localhost:9999");
-        $$(".tab-item").find(exactText("По номеру счёта")).click();
-        $$("[name='number']").last().setValue("4055 0100 0123 4613 8564");
-        $$("[name='phone']").last().setValue("+792000000000");
-        $$("button").find(exactText("Продолжить")).click();
-        $(withText("Успешная авторизация")).shouldBe(visible, Duration.ofSeconds(5));
-        $(byText("Личный кабинет")).shouldBe(visible, Duration.ofSeconds(5));
+        $("[data-test-id='city'] input").setValue("Москва");
+        String currentDate = generateDate(3, "dd.MM.yyyy");
+        $("[data-test-id='date'] input").sendKeys(Keys.chord(Keys.SHIFT, Keys.HOME), Keys.DELETE);
+        $("[data-test-id='date'] input").sendKeys(currentDate);
+        $("[data-test-id='name'] input").setValue("Иванов Иван");
+        $("[data-test-id='phone'] input").setValue("+79514998752");
+        $("[data-test-id='agreement']").click();
+        $("button.button").click();
+        $(".notification__content")
+                .shouldBe(Condition.visible, Duration.ofSeconds(15))
+                .shouldHave(Condition.exactText("Встреча успешно забронирована на " + currentDate));
     }
 }
-
