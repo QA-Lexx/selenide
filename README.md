@@ -1,1 +1,1 @@
-[![Build status] https://github.com/QA-Lexx/selenium/blob/main/.github/workflows/gradle.yml/badge.svg]
+[![Java CI with Gradle](https://github.com/QA-Lexx/selenium/actions/workflows/gradle.yml/badge.svg)](https://github.com/QA-Lexx/selenium/actions/workflows/gradle.yml)
